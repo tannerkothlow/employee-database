@@ -1,0 +1,3 @@
+-- Initialize 4 departments
+-- Initialize 6 roles
+-- Initialize 10 employees

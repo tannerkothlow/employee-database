@@ -115,7 +115,7 @@ class Prompts {
             resolve(dbFunc.showAll('role', true));
         });
         const callManager = new Promise((resolve, reject) => {
-            resolve(dbFunc.showAll('employee', true));
+            resolve(dbFunc.showAll('employee', true, true));
         });
 
         Promise.all([callRoles, callManager]).then((response) => {

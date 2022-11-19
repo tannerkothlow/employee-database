@@ -23,12 +23,12 @@ const db = mysql.createConnection(
 ).promise();
 
 class DBFunc {
-    async showAll(table, returnArray) { 
+    async showAll(table, returnArray, managerCall) { 
         let sendBack = [];
         try {
             const results = await db.query(`SELECT * FROM ${table}`);
             const data = results[0];
-            
+
             if(returnArray) {
                 let param;
                 if (table == 'department') {param = 'name'
@@ -40,6 +40,7 @@ class DBFunc {
                         // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
                         if (table == 'employee') { sendBack[i] += ` ${data[i]['last_name']}` };
                 };
+
                 return sendBack;
             } else {
                 return data;
@@ -48,6 +49,9 @@ class DBFunc {
             console.error(error)
         }
         // return sendBack;
+    }
+    async addRole(newRole) {
+        const {newRoleName, newRoleSalary, newRoleDep} = newRole;
     }
 }
 

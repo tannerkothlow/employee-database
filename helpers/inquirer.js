@@ -12,7 +12,60 @@ const Credentials = require('./credentials');
 // 6 Functions needed
 
 class Prompts {
+    init() {
+        inquirer
+        .prompt([
+            {
+                type: 'list',
+                choices: [`View all departments`,
+                `View all roles`,
+                `View all employees`,
+                `Add a department`,
+                `Add a role`,
+                `Add an employee`,
+                `Update and employee role`
+                ],
+                message: `What would you like to do?`,
+                name: `initOption`
+            }
+        ])
+        .then((response) => {
+            console.log(response.initOption)
+            switch(response.initOption) {
+                case `View all departments`:
 
+                    break;
+                case `View all roles`:
+
+                    break;
+                case `View all employees`:
+
+                    break;
+                case `Add a department`:
+
+                    break;
+                case `Add a role`:
+
+                    break;
+                case `Add an employee`:
+                    
+                    break;
+                case `Update and employee role`:
+            }
+        })
+    }
+    addDepartment() {
+
+    }
+    addRole() {
+
+    }
+    addEmployee() {
+
+    }
+    updateEmpRole() {
+
+    }
 }
 
 module.exports = Prompts;

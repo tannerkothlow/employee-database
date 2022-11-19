@@ -26,6 +26,8 @@ class Prompts {
                 `Add an employee`,
                 `Update and employee role`
                 ],
+                pageSize: 5,
+                loop: false,
                 message: `What would you like to do?`,
                 name: `initOption`
             }
@@ -34,16 +36,13 @@ class Prompts {
             console.log(response.initOption)
             switch(response.initOption) {
                 case `View all departments`:
-                    // dbFunc.allDepartments
-                    this.init();
+                    showAllPromise('department')
                     break;
                 case `View all roles`:
-                    // dbFunc.allRoles
-                    this.init();
+                    showAllPromise('role')
                     break;
                 case `View all employees`:
-                    // dbFunc.allEmployees
-                    this.init();
+                    showAllPromise('employee');
                     break;
                 case `Add a department`:
                     this.addDepartment();
@@ -74,70 +73,88 @@ class Prompts {
         })
     }
     addRole() {
+        let departments = [];
 
-        // dbFunc.allDepartments polymorph
-        const testDepartments = [`Bakery`, `Produce`, `Meat`, `Deli`];
-
-        inquirer
-        .prompt([
-            {
-                message: `Enter the name of the new role:`,
-                name: `newRoleName`
-            },
-            {
-                message: `Enter the salary of the new role:`,
-                name: `newRoleSalary`
-            },
-            {
-                type: 'list',
-                choices: testDepartments,
-                message: `Enter the department the role belongds to:`,
-                name: `newRoleDep`
-            }
-        ])
-        .then((response) => {
-            console.log(`Initialized addition of ${response.newRoleName}`);
+        const callInfo = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('department', true));
+        });
+        callInfo.then((response) => {
+            departments = response;
+            inquirer
+            .prompt([
+                {
+                    message: `Enter the name of the new role:`,
+                    name: `newRoleName`
+                },
+                {
+                    message: `Enter the salary of the new role:`,
+                    name: `newRoleSalary`
+                },
+                {
+                    type: 'list',
+                    choices: departments,
+                    loop: false,
+                    message: `Enter the department the role belongds to:`,
+                    name: `newRoleDep`
+                }
+            ])
+            .then((response) => {
+                console.log(`Initialized addition of ${response.newRoleName}`);
             // dbFunc.addRole(response);
             // Deconstruct in function
-            this.init();
-        })
+                this.init();
+            })
+        });
     }
     addEmployee() {
-        // First name, last name, role (array), employee's manager (none, array),
 
-        const testRoles = [`Stocker`, `Baker`, `Meat Cutter`, `Deli chef`];
-        // dbFunc.allRoles() polymorph
-        const testManagers = [`None`, `John`, `Kyle`, `May`, `Blake`];
-        // dbFunc.allEmployees() polymorph
+        let roles = [];
+        let managers = [];
 
-        inquirer
-        .prompt([
-            {
-                message: `Enter the new employee's first name:`,
-                name: `newEmpFN`
-            },
-            {
-                message: `Enter the new employee's last name:`,
-                name: `newEmpLN`
-            },
-            {
-                type: 'list',
-                choices: testRoles,
-                message: `Enter the new employee's role:`,
-                name: `newEmpRole`
-            },
-            {
-                type: 'list',
-                choices: testManagers,
-                message: `Enter the new employee's manager if they have one:`,
-                name: `newEmpManager`
-            }
-        ])
-        .then((response) => {
-            console.log(response);
-            // dbFunc.addEmployee(response);
-            this.init();
-        })
+        const callRoles = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('role', true));
+        });
+        const callManager = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('employee', true, true));
+        });
+
+        Promise.all([callRoles, callManager]).then((response) => {
+
+            roles = response[0];
+            managers = response[1];
+            managers.unshift('None');
+
+            inquirer
+            .prompt([
+                {
+                    message: `Enter the new employee's first name:`,
+                    name: `newEmpFN`
+                },
+                {
+                    message: `Enter the new employee's last name:`,
+                    name: `newEmpLN`
+                },
+                {
+                    type: 'list',
+                    choices: roles,
+                    loop: false,
+                    message: `Enter the new employee's role:`,
+                    name: `newEmpRole`
+                },
+                {
+                    type: 'list',
+                    choices: managers,
+                    loop: false,
+                    message: `Enter the new employee's manager if they have one:`,
+                    name: `newEmpManager`
+                }
+            ])
+            .then((response) => {
+                console.log(response);
+                // dbFunc.addEmployee(response);
+                this.init();
+            })
+        });
     }
     updateEmpRole() {
         // All employees, which role would you like to assign 
@@ -169,6 +186,19 @@ class Prompts {
     }
 }
 
-// Prompts.init();
+showAllPromise = choice => {
+    const callInfo = new Promise((resolve, reject) => {
+        resolve(dbFunc.showAll(choice));
+    });
+    callInfo.then((response) => {
+        console.table(response);
+        console.log('Promise resolved!');
+        const prompts = new Prompts;
+        prompts.init();
+    });
+}
+
+const prompts = new Prompts;
+prompts.init();
 
 module.exports = Prompts;

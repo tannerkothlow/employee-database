@@ -34,24 +34,13 @@ class Prompts {
             console.log(response.initOption)
             switch(response.initOption) {
                 case `View all departments`:
-
-                    const promise1 = new Promise((resolve, reject) => {
-                        resolve(dbFunc.showAll('employee'));
-                    });
-                    promise1.then((response) => {
-                        console.log(response);
-                        console.log('Success!');
-                        this.init();
-                    });
-
+                    showAllPromise('department')
                     break;
                 case `View all roles`:
-                    dbFunc.showAll('role');
-                    this.init();
+                    showAllPromise('role')
                     break;
                 case `View all employees`:
-                    dbFunc.showAll('employee');
-                    this.init();
+                    showAllPromise('employee');
                     break;
                 case `Add a department`:
                     this.addDepartment();
@@ -175,6 +164,17 @@ class Prompts {
             this.init();
         })
     }
+}
+
+showAllPromise = choice => {
+    const callInfo = new Promise((resolve, reject) => {
+        resolve(dbFunc.showAll(choice));
+    });
+    callInfo.then((response) => {
+        console.log(response);
+        console.log('Success!');
+        this.init();
+    });
 }
 
 const prompts = new Prompts;

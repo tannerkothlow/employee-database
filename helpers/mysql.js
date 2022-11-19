@@ -24,16 +24,29 @@ const db = mysql.createConnection(
 
 class DBFunc {
     async showAll(table, returnArray) { 
-        let sendBack;
+        let sendBack = [];
         try {
             const results = await db.query(`SELECT * FROM ${table}`);
-            sendBack = results[0];
-            // console.log(results[0]);
+            const data = results[0];
+            if(returnArray) {
+                let param;
+                if (table == 'department') {param = 'name'
+                } else if (table == 'role') {param = 'title'
+                } else {param = 'first_name'};
+
+                for (let i = 0; i < results.length; i++) {
+                    sendBack[i] = data[i][param];
+                        // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
+                        if (table == 'employee') { sendBack[i] += ` ${results[i]['last_name']}` };
+                };
+                return sendBack;
+            } else {
+                return data;
+            }
         } catch (error) {
             console.error(error)
         }
-        // console.log(sendBack);
-        return sendBack;
+        // return sendBack;
     }
 }
 

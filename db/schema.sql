@@ -4,25 +4,29 @@ CREATE bigstore_db;
 USE bigstore_db;
 
 CREATE TABLE department (
-    -- ID INT PRIMARY KEY
-    -- NAME VARCHAR(30)
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE role (
-    -- ID INT PRIMARY KEY
-    -- TITLE VARCHAR(30)
-    -- SALARY DECIMAL
-    -- DEPARTMENT ID
-    -- REFERENCE DEPARTMENT TABLE
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    title VARCHAR(30) NOT NULL,
+    salary DECIMAL NOT NULL,
+    department_id INT,
+    FOREIGN KEY (department_id)
+    REFERENCES department(id)
+    ON DELETE SET NULL
 );
 
 CREATE TABLE employee (
-    -- ID INT PRIMARY KEY
-    -- FIRST_NAME VARCHAR(30)
-    -- LAST_NAME VARCHAR(30)
-    -- ROLE_ID INT
-    -- REFERENCE ROLE ID
-    -- MANAGER_ID INT
-    -- REFERENCES OTHER EMPLOYEE THAT IS A MANAGER
-    -- NULL IF NOT MANAGED
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id INT,
+    FOREIGN KEY (role_id)
+    REFERENCES role(id)
+    ON DELETE SET NULL,
+    manager_id INT,
+    FOREIGN KEY (manager_id)
+    REFERENCES employee(id)
 );

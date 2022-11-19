@@ -48,7 +48,7 @@ class Prompts {
 
                     break;
                 case `Add an employee`:
-                    
+
                     break;
                 case `Update and employee role`:
             }

@@ -34,15 +34,15 @@ class Prompts {
             console.log(response.initOption)
             switch(response.initOption) {
                 case `View all departments`:
-                    dbFunc.showAll(department);
+                    dbFunc.showAll('department');
                     this.init();
                     break;
                 case `View all roles`:
-                    dbFunc.showAll(role);
+                    dbFunc.showAll('role');
                     this.init();
                     break;
                 case `View all employees`:
-                    dbFunc.showAll(employee);
+                    dbFunc.showAll('employee');
                     this.init();
                     break;
                 case `Add a department`:
@@ -169,6 +169,7 @@ class Prompts {
     }
 }
 
-// Prompts.init();
+const prompts = new Prompts;
+prompts.init();
 
 module.exports = Prompts;

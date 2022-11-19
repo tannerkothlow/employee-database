@@ -10,36 +10,20 @@ require('dotenv').config({ path: '../.env' });
 // Add an employee
 // Update and employee role
 
-const db = mysql.createConnection(
-    {
-        host: 'localhost',
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME
-    },
-    console.log(`Connect to the bigstore_db database.`)
-);
+const dbConfig = {
+    host: 'localhost',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+}
 
 class DBFunc {
-    // allDepartments(returnArray) {
-    //     db.query('SELECT * FROM department', function (err, results) {
-    //         if (err) {
-    //             console.log(err);
-    //         }
-    //         // If called for the addRole() func in inquirer.js
-    //         if (returnArray) {
-    //             let departments = [];
-    //             for (let i = 0; i < results.length; i++) {
-    //                 departments[i] = results[i].name;
-    //             };
-    //             return departments;
-    //         } else {
-    //             // Otherwise just print the results for `View all departments`
-    //             console.table(results);
-    //         };
-    //       });
-    // };
-    showAll(table, returnArray) {
+    async showAll(table, returnArray) {
+        const db = mysql.createConnection(
+            dbConfig, 
+            console.log(`Connected to ${dbConfig.database}`)
+        );
+        
         db.query(`SELECT * FROM ${table}`, function (err, results) {
             if (err) {
                 console.log(err);
@@ -58,18 +42,23 @@ class DBFunc {
                         // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
                         if (table = 'employee') { sendBack[i] += ` ${results[i]['last_name']}` };
                 };
+                // console.log(sendBack);
+                // thrownObject = sendBack;
+                console.log(thrownObject)
                 
-                console.log(sendBack);
-                return sendBack;
             } else {
-                // Otherwise just print the results for `View all {table}`
-                console.table(results);
+                // console.table(results);
+                thrownObject = results;
+                // console.log(thrownObject);
             };
-          });
+            console.log(thrownObject);
+        });
+        // console.log(thrownObject);
+        // return thrownObject;
     };
 }
 
 const dbFunc = new DBFunc;
-dbFunc.showAll('employee');
+console.table(dbFunc.showAll('employee'));
 
 module.exports = DBFunc;

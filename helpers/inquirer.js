@@ -73,8 +73,6 @@ class Prompts {
         })
     }
     addRole() {
-
-        // dbFunc.allDepartments polymorph
         let departments = [];
 
         const callInfo = new Promise((resolve, reject) => {
@@ -82,68 +80,81 @@ class Prompts {
         });
         callInfo.then((response) => {
             departments = response;
-            console.log(departments);
-        inquirer
-        .prompt([
-            {
-                message: `Enter the name of the new role:`,
-                name: `newRoleName`
-            },
-            {
-                message: `Enter the salary of the new role:`,
-                name: `newRoleSalary`
-            },
-            {
-                type: 'list',
-                choices: departments,
-                message: `Enter the department the role belongds to:`,
-                name: `newRoleDep`
-            }
-        ])
-        .then((response) => {
-            console.log(`Initialized addition of ${response.newRoleName}`);
+            inquirer
+            .prompt([
+                {
+                    message: `Enter the name of the new role:`,
+                    name: `newRoleName`
+                },
+                {
+                    message: `Enter the salary of the new role:`,
+                    name: `newRoleSalary`
+                },
+                {
+                    type: 'list',
+                    choices: departments,
+                    loop: false,
+                    message: `Enter the department the role belongds to:`,
+                    name: `newRoleDep`
+                }
+            ])
+            .then((response) => {
+                console.log(`Initialized addition of ${response.newRoleName}`);
             // dbFunc.addRole(response);
             // Deconstruct in function
-            this.init();
-        })
+                this.init();
+            })
         });
     }
     addEmployee() {
-        // First name, last name, role (array), employee's manager (none, array),
 
-        const testRoles = [`Stocker`, `Baker`, `Meat Cutter`, `Deli chef`];
-        // dbFunc.allRoles() polymorph
-        const testManagers = [`None`, `John`, `Kyle`, `May`, `Blake`];
-        // dbFunc.allEmployees() polymorph
+        let roles = [];
+        let managers = [];
 
-        inquirer
-        .prompt([
-            {
-                message: `Enter the new employee's first name:`,
-                name: `newEmpFN`
-            },
-            {
-                message: `Enter the new employee's last name:`,
-                name: `newEmpLN`
-            },
-            {
-                type: 'list',
-                choices: testRoles,
-                message: `Enter the new employee's role:`,
-                name: `newEmpRole`
-            },
-            {
-                type: 'list',
-                choices: testManagers,
-                message: `Enter the new employee's manager if they have one:`,
-                name: `newEmpManager`
-            }
-        ])
-        .then((response) => {
-            console.log(response);
-            // dbFunc.addEmployee(response);
-            this.init();
-        })
+        const callRoles = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('role', true));
+        });
+        const callManager = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('employee', true));
+        });
+
+        Promise.all([callRoles, callManager]).then((response) => {
+
+            roles = response[0];
+            managers = response[1];
+            managers.unshift('None');
+
+            inquirer
+            .prompt([
+                {
+                    message: `Enter the new employee's first name:`,
+                    name: `newEmpFN`
+                },
+                {
+                    message: `Enter the new employee's last name:`,
+                    name: `newEmpLN`
+                },
+                {
+                    type: 'list',
+                    choices: roles,
+                    loop: false,
+                    message: `Enter the new employee's role:`,
+                    name: `newEmpRole`
+                },
+                {
+                    type: 'list',
+                    choices: managers,
+                    loop: false,
+                    message: `Enter the new employee's manager if they have one:`,
+                    name: `newEmpManager`
+                }
+            ])
+            .then((response) => {
+                console.log(response);
+                // dbFunc.addEmployee(response);
+                this.init();
+            })
+        });
     }
     updateEmpRole() {
         // All employees, which role would you like to assign 

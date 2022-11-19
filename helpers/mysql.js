@@ -1,5 +1,5 @@
 const mysql = require('mysql2');
-
+const cTable = require('console.table');
 require('dotenv').config({ path: '../.env' });
 
 // View all departments (polymorph to send back an array)
@@ -21,7 +21,27 @@ const db = mysql.createConnection(
 );
 
 class DBFunc {
-
+    allDepartments(returnArray) {
+        db.query('SELECT * FROM department', function (err, results) {
+            if (err) {
+                console.log(err);
+            }
+            // If called for the addRole() func in inquirer.js
+            if (returnArray) {
+                let departments = [];
+                for (let i = 0; i < results.length; i++) {
+                    departments[i] = results[i].name;
+                };
+                return departments;
+            } else {
+                // Otherwise just print the results for `View all departments`
+                console.table(results);
+            };
+          });
+    };
 }
+
+const dbFunc = new DBFunc;
+dbFunc.allDepartments(true);
 
 module.exports = DBFunc;

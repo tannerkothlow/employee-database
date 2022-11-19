@@ -35,12 +35,15 @@ class Prompts {
             switch(response.initOption) {
                 case `View all departments`:
                     // dbFunc.allDepartments
+                    this.init();
                     break;
                 case `View all roles`:
                     // dbFunc.allRoles
+                    this.init();
                     break;
                 case `View all employees`:
                     // dbFunc.allEmployees
+                    this.init();
                     break;
                 case `Add a department`:
                     this.addDepartment();
@@ -93,7 +96,7 @@ class Prompts {
             }
         ])
         .then((response) => {
-            console.log(`Initialized addition of ${response.newRole}`);
+            console.log(`Initialized addition of ${response.newRoleName}`);
             // dbFunc.addRole(response);
             // Deconstruct in function
             this.init();
@@ -166,6 +169,6 @@ class Prompts {
     }
 }
 
-Prompts.init();
+// Prompts.init();
 
 module.exports = Prompts;

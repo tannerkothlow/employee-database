@@ -21,20 +21,48 @@ const db = mysql.createConnection(
 );
 
 class DBFunc {
-    allDepartments(returnArray) {
-        db.query('SELECT * FROM department', function (err, results) {
+    // allDepartments(returnArray) {
+    //     db.query('SELECT * FROM department', function (err, results) {
+    //         if (err) {
+    //             console.log(err);
+    //         }
+    //         // If called for the addRole() func in inquirer.js
+    //         if (returnArray) {
+    //             let departments = [];
+    //             for (let i = 0; i < results.length; i++) {
+    //                 departments[i] = results[i].name;
+    //             };
+    //             return departments;
+    //         } else {
+    //             // Otherwise just print the results for `View all departments`
+    //             console.table(results);
+    //         };
+    //       });
+    // };
+    showAll(table, returnArray) {
+        db.query(`SELECT * FROM ${table}`, function (err, results) {
             if (err) {
                 console.log(err);
             }
-            // If called for the addRole() func in inquirer.js
+            // If called for the addRole(), addEmployee(), or updateRole func in inquirer.js
             if (returnArray) {
-                let departments = [];
+                let sendBack = [];
+
+                let param;
+                if (table == 'department') { param = 'name';
+                } else if (table == 'role') {param = 'title';
+                } else {param = 'first_name'};
+
                 for (let i = 0; i < results.length; i++) {
-                    departments[i] = results[i].name;
+                    sendBack[i] = results[i][param];
+                        // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
+                        if (table = 'employee') { sendBack[i] += ` ${results[i]['last_name']}` };
                 };
-                return departments;
+                
+                console.log(sendBack);
+                return sendBack;
             } else {
-                // Otherwise just print the results for `View all departments`
+                // Otherwise just print the results for `View all {table}`
                 console.table(results);
             };
           });
@@ -42,6 +70,6 @@ class DBFunc {
 }
 
 const dbFunc = new DBFunc;
-dbFunc.allDepartments(true);
+dbFunc.showAll('employee');
 
 module.exports = DBFunc;

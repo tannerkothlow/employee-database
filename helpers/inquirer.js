@@ -34,15 +34,15 @@ class Prompts {
             console.log(response.initOption)
             switch(response.initOption) {
                 case `View all departments`:
-                    dbFunc.allDepartments();
+                    dbFunc.showAll(department);
                     this.init();
                     break;
                 case `View all roles`:
-                    // dbFunc.allRoles
+                    dbFunc.showAll(role);
                     this.init();
                     break;
                 case `View all employees`:
-                    // dbFunc.allEmployees
+                    dbFunc.showAll(employee);
                     this.init();
                     break;
                 case `Add a department`:

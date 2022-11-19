@@ -34,8 +34,16 @@ class Prompts {
             console.log(response.initOption)
             switch(response.initOption) {
                 case `View all departments`:
-                    dbFunc.showAll('department')
-                    .then(this.init());
+
+                    const promise1 = new Promise((resolve, reject) => {
+                        resolve(dbFunc.showAll('employee'));
+                    });
+                    promise1.then((response) => {
+                        console.log(response);
+                        console.log('Success!');
+                        this.init();
+                    });
+
                     break;
                 case `View all roles`:
                     dbFunc.showAll('role');

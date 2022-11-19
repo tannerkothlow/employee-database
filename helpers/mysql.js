@@ -29,8 +29,31 @@ class DBFunc {
             const results = await db.query(`SELECT * FROM ${table}`);
             sendBack = results[0];
             // console.log(results[0]);
-        
-        // const results = await db.query(`SELECT * FROM ${table}`, function (err, results) {
+        } catch (error) {
+            console.error(error)
+        }
+        // console.log(sendBack);
+        return sendBack;
+    }
+}
+
+const dbFunc = new DBFunc;
+// dbFunc.showAll('employee').then(console.log('Promise fufilled'));
+// console.log('Fufilled 2')
+// const grape = dbFunc.showAll('employee');
+// console.log(grape);
+
+// const promise1 = new Promise((resolve, reject) => {
+//     resolve(dbFunc.showAll('employee'));
+// });
+// promise1.then((response) => {
+//     console.log(response);
+//     this.init();
+// });
+
+module.exports = DBFunc;
+
+ // const results = await db.query(`SELECT * FROM ${table}`, function (err, results) {
         //     if (err) {
         //         console.log(err);
         //     }
@@ -56,27 +79,3 @@ class DBFunc {
         //     };
         //     console.log(thrownObject);
         // });
-        } catch (error) {
-            console.error(error)
-        }
-        // console.log(sendBack);
-        return sendBack;
-    }
-}
-
-const dbFunc = new DBFunc;
-// dbFunc.showAll('employee').then(console.log('Promise fufilled'));
-// console.log('Fufilled 2')
-// const grape = dbFunc.showAll('employee');
-// console.log(grape);
-
-const promise1 = new Promise((resolve, reject) => {
-    resolve(dbFunc.showAll('employee'));
-});
-
-promise1.then((response) => {
-    console.log(response);
-    console.log('YAY!')
-});
-
-module.exports = DBFunc;

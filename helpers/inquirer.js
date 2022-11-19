@@ -101,6 +101,7 @@ class Prompts {
     }
     addEmployee() {
         // First name, last name, role (array), employee's manager (none, array),
+
         const testRoles = [`Stocker`, `Baker`, `Meat Cutter`, `Deli chef`];
         // dbFunc.allRoles() polymorph
         const testManagers = [`None`, `John`, `Kyle`, `May`, `Blake`];
@@ -136,8 +137,35 @@ class Prompts {
         })
     }
     updateEmpRole() {
+        // All employees, which role would you like to assign 
 
+        // dbFunc.allEmployees polymorph
+        const testEmps = [`Big Greg`, `Small Jim`, `Regular Pete`];
+        // dbFunc.allRoles polymorph
+        const testRoles = [`Stocker`, `Baker`, `Meat Cutter`, `Deli chef`];
+
+        inquirer
+        .prompt([
+            {
+                type: 'list',
+                choices: testEmps,
+                message: `Chose the employee that needs to be updated:`,
+                name: `chosenEmp`
+            },
+            {
+                type: 'list',
+                choices: testRoles,
+                message: `Chose the new role to apply to the employee:`,
+                name: `chosenRole`
+            }
+        ])
+        .then((response) => {
+            console.log(response);
+            this.init();
+        })
     }
 }
+
+Prompts.init();
 
 module.exports = Prompts;

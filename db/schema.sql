@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS bigstore_db;
-CREATE bigstore_db;
+CREATE DATABASE bigstore_db;
 
 USE bigstore_db;
 

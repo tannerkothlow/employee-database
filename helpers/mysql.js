@@ -17,48 +17,66 @@ const dbConfig = {
     database: process.env.DB_NAME
 }
 
+const db = mysql.createConnection(
+    dbConfig, 
+    console.log(`Connected to ${dbConfig.database}`)
+).promise();
+
 class DBFunc {
-    async showAll(table, returnArray) {
-        const db = mysql.createConnection(
-            dbConfig, 
-            console.log(`Connected to ${dbConfig.database}`)
-        );
+    async showAll(table, returnArray) { 
+        let sendBack;
+        try {
+            const results = await db.query(`SELECT * FROM ${table}`);
+            sendBack = results[0];
+            // console.log(results[0]);
         
-        db.query(`SELECT * FROM ${table}`, function (err, results) {
-            if (err) {
-                console.log(err);
-            }
-            // If called for the addRole(), addEmployee(), or updateRole func in inquirer.js
-            if (returnArray) {
-                let sendBack = [];
+        // const results = await db.query(`SELECT * FROM ${table}`, function (err, results) {
+        //     if (err) {
+        //         console.log(err);
+        //     }
+        //     // If called for the addRole(), addEmployee(), or updateRole func in inquirer.js
+        //     if (returnArray) {
+        //         let sendBack = [];
 
-                let param;
-                if (table == 'department') { param = 'name';
-                } else if (table == 'role') {param = 'title';
-                } else {param = 'first_name'};
+        //         let param;
+        //         if (table == 'department') { param = 'name';
+        //         } else if (table == 'role') {param = 'title';
+        //         } else {param = 'first_name'};
 
-                for (let i = 0; i < results.length; i++) {
-                    sendBack[i] = results[i][param];
-                        // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
-                        if (table = 'employee') { sendBack[i] += ` ${results[i]['last_name']}` };
-                };
-                // console.log(sendBack);
-                // thrownObject = sendBack;
-                console.log(thrownObject)
-                
-            } else {
-                // console.table(results);
-                thrownObject = results;
-                // console.log(thrownObject);
-            };
-            console.log(thrownObject);
-        });
-        // console.log(thrownObject);
-        // return thrownObject;
-    };
+        //         for (let i = 0; i < results.length; i++) {
+        //             sendBack[i] = results[i][param];
+        //                 // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
+        //                 if (table = 'employee') { sendBack[i] += ` ${results[i]['last_name']}` };
+        //         };
+        //         // thrownObject = sendBack;
+        //     } else {
+        //         // console.table(results);
+        //         thrownObject = results;
+        //         // console.log(thrownObject);
+        //     };
+        //     console.log(thrownObject);
+        // });
+        } catch (error) {
+            console.error(error)
+        }
+        // console.log(sendBack);
+        return sendBack;
+    }
 }
 
 const dbFunc = new DBFunc;
-console.table(dbFunc.showAll('employee'));
+// dbFunc.showAll('employee').then(console.log('Promise fufilled'));
+// console.log('Fufilled 2')
+// const grape = dbFunc.showAll('employee');
+// console.log(grape);
+
+const promise1 = new Promise((resolve, reject) => {
+    resolve(dbFunc.showAll('employee'));
+});
+
+promise1.then((response) => {
+    console.log(response);
+    console.log('YAY!')
+});
 
 module.exports = DBFunc;

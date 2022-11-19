@@ -34,8 +34,8 @@ class Prompts {
             console.log(response.initOption)
             switch(response.initOption) {
                 case `View all departments`:
-                    dbFunc.showAll('department');
-                    this.init();
+                    dbFunc.showAll('department')
+                    .then(this.init());
                     break;
                 case `View all roles`:
                     dbFunc.showAll('role');

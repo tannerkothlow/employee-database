@@ -100,16 +100,38 @@ class Prompts {
         })
     }
     addEmployee() {
+        // First name, last name, role (array), employee's manager (none, array),
+        const testRoles = [`Stocker`, `Baker`, `Meat Cutter`, `Deli chef`];
+        // dbFunc.allRoles() polymorph
+        const testManagers = [`None`, `John`, `Kyle`, `May`, `Blake`];
+        // dbFunc.allEmployees() polymorph
+
         inquirer
         .prompt([
             {
-                message: `Enter the new Empl:`,
-                name: `newRole`
+                message: `Enter the new employee's first name:`,
+                name: `newEmpFN`
+            },
+            {
+                message: `Enter the new employee's last name:`,
+                name: `newEmpLN`
+            },
+            {
+                type: 'list',
+                choices: testRoles,
+                message: `Enter the new employee's role:`,
+                name: `newEmpRole`
+            },
+            {
+                type: 'list',
+                choices: testManagers,
+                message: `Enter the new employee's manager if they have one:`,
+                name: `newEmpManager`
             }
         ])
         .then((response) => {
             console.log(response);
-            // dbFunc.addRole(response);
+            // dbFunc.addEmployee(response);
             this.init();
         })
     }

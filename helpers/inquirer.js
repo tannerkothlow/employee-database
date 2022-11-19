@@ -60,7 +60,7 @@ class Prompts {
         inquirer
         .prompt([
             {
-                message: `Enter the name of the department`,
+                message: `Enter the name of the new department:`,
                 name: `newDepartment`
             }
         ])
@@ -72,9 +72,46 @@ class Prompts {
     }
     addRole() {
 
+        // dbFunc.allDepartments polymorph
+        const testDepartments = [`Bakery`, `Produce`, `Meat`, `Deli`];
+
+        inquirer
+        .prompt([
+            {
+                message: `Enter the name of the new role:`,
+                name: `newRoleName`
+            },
+            {
+                message: `Enter the salary of the new role:`,
+                name: `newRoleSalary`
+            },
+            {
+                type: 'list',
+                choices: testDepartments,
+                message: `Enter the department the role belongds to:`,
+                name: `newRoleDep`
+            }
+        ])
+        .then((response) => {
+            console.log(`Initialized addition of ${response.newRole}`);
+            // dbFunc.addRole(response);
+            // Deconstruct in function
+            this.init();
+        })
     }
     addEmployee() {
-
+        inquirer
+        .prompt([
+            {
+                message: `Enter the new Empl:`,
+                name: `newRole`
+            }
+        ])
+        .then((response) => {
+            console.log(response);
+            // dbFunc.addRole(response);
+            this.init();
+        })
     }
     updateEmpRole() {
 

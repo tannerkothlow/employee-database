@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 
-// View all departments
+// View all departments (polymorph to send back an array)
 // View all roles
 // View all employees
 // Add a department

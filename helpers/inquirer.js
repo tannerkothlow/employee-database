@@ -26,6 +26,8 @@ class Prompts {
                 `Add an employee`,
                 `Update and employee role`
                 ],
+                pageSize: 5,
+                loop: false,
                 message: `What would you like to do?`,
                 name: `initOption`
             }
@@ -73,8 +75,14 @@ class Prompts {
     addRole() {
 
         // dbFunc.allDepartments polymorph
-        const testDepartments = [`Bakery`, `Produce`, `Meat`, `Deli`];
+        let departments = [];
 
+        const callInfo = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('department', true));
+        });
+        callInfo.then((response) => {
+            departments = response;
+            console.log(departments);
         inquirer
         .prompt([
             {
@@ -87,7 +95,7 @@ class Prompts {
             },
             {
                 type: 'list',
-                choices: testDepartments,
+                choices: departments,
                 message: `Enter the department the role belongds to:`,
                 name: `newRoleDep`
             }
@@ -98,6 +106,7 @@ class Prompts {
             // Deconstruct in function
             this.init();
         })
+        });
     }
     addEmployee() {
         // First name, last name, role (array), employee's manager (none, array),
@@ -171,9 +180,10 @@ showAllPromise = choice => {
         resolve(dbFunc.showAll(choice));
     });
     callInfo.then((response) => {
-        console.log(response);
-        console.log('Success!');
-        this.init();
+        console.table(response);
+        console.log('Promise resolved!');
+        const prompts = new Prompts;
+        prompts.init();
     });
 }
 

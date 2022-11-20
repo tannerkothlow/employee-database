@@ -50,8 +50,10 @@ class DBFunc {
         }
         // return sendBack;
     }
-    async addRole(newRole) {
-        const {newRoleName, newRoleSalary, newRoleDep} = newRole;
+    async addNew(newObj, param) {
+        
+        const {newRoleName, newRoleSalary, newRoleDep} = newObj;
+
     }
 }
 

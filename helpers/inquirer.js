@@ -67,8 +67,7 @@ class Prompts {
             }
         ])
         .then((response) => {
-            console.log(response.newDepartment);
-            // dbFunc.addDepartment(response.newDepartment);
+            dbFunc.addNew(response, 'department')
             this.init();
         })
     }
@@ -80,6 +79,7 @@ class Prompts {
         });
         callInfo.then((response) => {
             departments = response;
+
             inquirer
             .prompt([
                 {
@@ -99,9 +99,7 @@ class Prompts {
                 }
             ])
             .then((response) => {
-                console.log(`Initialized addition of ${response.newRoleName}`);
-            // dbFunc.addRole(response);
-            // Deconstruct in function
+                dbFunc.addNew(response, 'role')
                 this.init();
             })
         });
@@ -150,31 +148,41 @@ class Prompts {
                 }
             ])
             .then((response) => {
-                console.log(response);
-                // dbFunc.addEmployee(response);
+                dbFunc.addNew(response, 'employee')
                 this.init();
             })
         });
     }
     updateEmpRole() {
-        // All employees, which role would you like to assign 
 
-        // dbFunc.allEmployees polymorph
-        const testEmps = [`Big Greg`, `Small Jim`, `Regular Pete`];
-        // dbFunc.allRoles polymorph
-        const testRoles = [`Stocker`, `Baker`, `Meat Cutter`, `Deli chef`];
+        let emps = [];
+        let roles = [];
 
+        const callRoles = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('employee', true));
+        });
+        const callManager = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('role', true, true));
+        });
+
+        Promise.all([callRoles, callManager]).then((response) => {
+
+            emps = response[0];
+            roles = response[1];
+            
         inquirer
         .prompt([
             {
                 type: 'list',
-                choices: testEmps,
+                choices: emps,
+                loop: false,
                 message: `Chose the employee that needs to be updated:`,
                 name: `chosenEmp`
             },
             {
                 type: 'list',
-                choices: testRoles,
+                choices: roles,
+                loop: false,
                 message: `Chose the new role to apply to the employee:`,
                 name: `chosenRole`
             }
@@ -183,6 +191,7 @@ class Prompts {
             console.log(response);
             this.init();
         })
+        });
     }
 }
 
@@ -196,6 +205,10 @@ showAllPromise = choice => {
         const prompts = new Prompts;
         prompts.init();
     });
+}
+
+addNewPromise = (response, param) => {
+    // Eventually add stuff here
 }
 
 const prompts = new Prompts;

@@ -32,7 +32,7 @@ class DBFunc {
             if (managerCall) {
                 for (let i = 0; i < data.length; i++) {
                     if (data[i].manager_id == null) {
-                        let manName = `${data[i].last_name} ${data[i].last_name}`
+                        let manName = `${data[i].first_name} ${data[i].last_name}`
                         sendBack.push(manName);
                     }
                 }

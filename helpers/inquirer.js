@@ -30,8 +30,8 @@ class Prompts {
                 `Add an employee`,
                 `Update an employee role`,
                 `Update an employee's manager`,
-                // ==== BONUS PROMPTS, EXPIREMENTAL ====
                 `View employees by manager`,
+                   // ==== BONUS PROMPTS, EXPIREMENTAL ====
                 `Remove department, role, or employee`,
                 `View salary budgets per department`
                 ],
@@ -70,6 +70,12 @@ class Prompts {
                     break;
                 case `View employees by manager`:
                     this.viewEmpByManager();
+                    break;
+                case `Remove department, role, or employee`:
+                    this.deleteElement();
+                    break;
+                case `View salary budgets per department`:
+                    this.viewBudget();
             }
         })
     }
@@ -241,11 +247,19 @@ class Prompts {
                     resolve(dbFunc.showEmpByManager(response.chosenManager));
                 });
                 callInfo.then((response) => {
-                    console.table(response);
+                    if (response.length > 0) {console.table(response);}
+                    else {console.log(conTabCol, `No employees found for this manager!`)}
+                    
                     this.init();
                 });
             })
         })
+    }
+    deleteElement() {
+        // 
+    }
+    viewBudget() {
+        // 
     }
 }
 

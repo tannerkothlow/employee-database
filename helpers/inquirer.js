@@ -188,7 +188,7 @@ class Prompts {
             }
         ])
         .then((response) => {
-        
+            dbFunc.updateEmp(emp, role);
             this.init();
         })
         });

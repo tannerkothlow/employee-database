@@ -95,24 +95,33 @@ class DBFunc {
             // Get the ID of the manager
             const getManagerID = new Promise((resolve, reject) => {
 
+                if (newEmpManager != 'None') {
                 const splitName = newEmpManager.split(" ");
                 let manFN = splitName[0];
                 let manLN = splitName[1];
 
                 resolve(db.query(`SELECT id FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
+                } else {
+                    resolve('None');
+                }
             })
 
             // THEN add the new employee to the table
             Promise.all([getRoleID, getManagerID]).then((response) => {
                 // i love arrays
                 let roleID = response[0][0][0].id;
-                let managerID = response[1][0][0].id;
+                let managerID = (response[1] != 'None') ? response[1][0][0].id : null;
 
                 const result = db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${newEmpFN}','${newEmpLN}','${roleID}','${managerID}')`)
 
                 console.log(`New employee ${newEmpFN} ${newEmpLN} added!`)
             })
         } else {console.error(`Invalid param submitted!!`)}
+    }
+    async updateEmp(emp, role) {
+        const splitName = emp.split(" ");
+        let empFN = splitName[0];
+        let empLN = splitName[1];
     }
 }
 

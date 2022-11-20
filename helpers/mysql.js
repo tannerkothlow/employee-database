@@ -62,12 +62,20 @@ class DBFunc {
 
         } else if (param == 'role') {
             const {newRoleName, newRoleSalary, newRoleDep} = newObj;
-            const depID = getDepId(newRoleDep);
+            let depID;
+            // Get department ID
             try {
-                const results = await db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}')`)
+                const depIDpull = await db.query(`SELECT * FROM department WHERE name = '${newRoleDep}'`)
+                depID = depIDpull[0].id;
             } catch (error) {
                 console.error(error)
             }
+            // Write role to file
+            // try {
+            //     const results = await db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}', '${newRoleSalary}', '${depID}')`)
+            // } catch (error) {
+            //     console.error(error)
+            // }
 
         } else if (param == 'employee') {
             const {newEmpFN, newEmpLN, newEmpRole, newEmpmanager} = newObj;
@@ -77,8 +85,11 @@ class DBFunc {
     }
 }
 
+const dbfunc = new DBFunc;
+dbfunc.addNew(true, 'role');
+
 getDepId = dep => {
-    
+    db.query(`SELECT * FROM `)
 }
 
 module.exports = DBFunc;

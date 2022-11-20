@@ -7,14 +7,8 @@ const DBFunc = require('./mysql');
 const dbFunc = new DBFunc;
 
 const conTabCol = '\x1b[34m%s\1xb[0m';
-
-// BONUS:
-
-// Update employee managers
-// View employees by manager
-// View employees by department
-// Delete departments, roles, and employees
-// View salary total of all employees in a department
+const conMag = '\x1b[35m%s\x1b[0m';
+const conGood = '\x1b[32m%s\x1b[0m';
 
 class Prompts {
     init() {
@@ -30,7 +24,6 @@ class Prompts {
                 `Add an employee`,
                 `Update an employee role`,
                 `Update an employee's manager`,
-                // ==== BONUS PROMPTS, EXPIREMENTAL ====
                 `View employees by manager`,
                 `Remove department, role, or employee`,
                 `View salary budgets per department`
@@ -70,6 +63,12 @@ class Prompts {
                     break;
                 case `View employees by manager`:
                     this.viewEmpByManager();
+                    break;
+                case `Remove department, role, or employee`:
+                    this.deleteElement();
+                    break;
+                case `View salary budgets per department`:
+                    this.viewBudget();
             }
         })
     }
@@ -241,9 +240,94 @@ class Prompts {
                     resolve(dbFunc.showEmpByManager(response.chosenManager));
                 });
                 callInfo.then((response) => {
-                    console.table(response);
+                    if (response.length > 0) {console.table(response);}
+                    else {console.log(conTabCol, `No employees found for this manager!`)}
+                    
                     this.init();
                 });
+            })
+        })
+    }
+    deleteElement() {
+        inquirer
+        .prompt([
+            {
+                type: 'list',
+                loop: false,
+                choices: [
+                    `Departments`,
+                    `Roles`,
+                    `Employees`
+                ],
+                message: 'Chose what you want to delete',
+                name: 'delChoice'
+            }
+        ])
+        .then((response) => {
+            const param = response.delChoice.toLowerCase().slice(0, -1);
+            console.log(`The edited param ${param}`);
+            const callChoices = new Promise (resolve => {
+                resolve(dbFunc.showAll(`${param}`, true));
+            });
+            callChoices.then((response) => {
+                let paramChoices = response;
+                inquirer
+                .prompt([
+                    {
+                        type: 'list',
+                        loop: false,
+                        choices: paramChoices,
+                        message: `Choose what you want to delete`,
+                        name: `delElement`
+                    },
+                    {
+                        type: 'list',
+                        loop: false,
+                        choices: [
+                            `[NO - CANCEL]`,
+                            `[YES - DELETE]`
+                        ],
+                        message: `ARE YOU SURE? \n This cannot be undone!`,
+                        name: `confirm`
+                    }
+                ])
+                .then((response) => {
+                    // const delElement = response.delElement
+                    if (response.confirm == `[YES - DELETE]`) {
+                        dbFunc.deleteElement(param, response.delElement);
+                        this.init();
+                    } else {
+                        console.log(conGood, `++ Deletion canceled. ++`);
+                        this.init();
+                    }
+                })
+            })
+        })
+    }
+    viewBudget() {
+        const callInfo = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('department', true));
+        });
+        callInfo.then((response) => {
+            let departments = response;
+            inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    loop: false,
+                    choices: departments,
+                    message: `Chose a department to see the combined salary of all employees`,
+                    name: `chosenDepartment`
+                }
+            ])
+            .then((response) => {
+                const getSalaries = new Promise((resolve, reject) => {
+                    resolve(dbFunc.viewSalaries(response.chosenDepartment))
+                })
+                .then((response) => {
+                    console.log(response);
+                    this.init();
+                })
             })
         })
     }

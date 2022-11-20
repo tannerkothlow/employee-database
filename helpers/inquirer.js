@@ -289,8 +289,7 @@ class Prompts {
                     }
                 ])
                 .then((response) => {
-                    console.log(`${param} table to have ${response.delElement} deleted`)
-                    // dbFunc.deleteElement(table, element)
+                    dbFunc.deleteElement(param, response.delElement)
                     this.init();
                 })
             })

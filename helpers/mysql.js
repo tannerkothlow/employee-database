@@ -172,6 +172,12 @@ class DBFunc {
             console.error(error)
         }
     }
+    async deleteElement(table, element) {
+        console.log(`${table} table to have ${element} deleted`);
+        // department name
+        // role title
+        // employee first_name + last_name
+    }
 }
 
 module.exports = DBFunc;

@@ -10,6 +10,9 @@ require('dotenv').config({ path: '../.env' });
 // Add an employee
 // Update and employee role
 
+const conGood = '\x1b[32m%s\x1b[0m';
+const conBad = '\x1b[31m%s\x1b[0m';
+
 const dbConfig = {
     host: 'localhost',
     user: process.env.DB_USER,
@@ -28,16 +31,24 @@ class DBFunc {
         try {
             const results = await db.query(`SELECT * FROM ${table}`);
             const data = results[0];
-
-            if(returnArray) {
+            // Polymorph to send back JUST managers, an array of selections, or the raw data to be console.table'd
+            if (managerCall) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].manager_id == null) {
+                        let manName = `${data[i].first_name} ${data[i].last_name}`
+                        sendBack.push(manName);
+                    }
+                }
+                return sendBack;
+            } else if(returnArray) {
                 let param;
+                // Param is set to the relevant "Name" key
                 if (table == 'department') {param = 'name'
                 } else if (table == 'role') {param = 'title'
                 } else {param = 'first_name'};
 
                 for (let i = 0; i < data.length; i++) {
                     sendBack[i] = data[i][param];
-                        // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
                         if (table == 'employee') { sendBack[i] += ` ${data[i]['last_name']}` };
                 };
 
@@ -48,52 +59,90 @@ class DBFunc {
         } catch (error) {
             console.error(error)
         }
-        // return sendBack;
     }
-    async addRole(newRole) {
-        const {newRoleName, newRoleSalary, newRoleDep} = newRole;
+    async addNew(newObj, param) {
+        // Polymorph to send the incoming data to one of three functions that inserts data into its respective table
+        if (param == 'department') {
+            const {newDepartment} = newObj;
+            try {
+                const results = await db.query(`INSERT INTO department (name) VALUES ('${newDepartment}')`)
+                console.log(conGood, `\n +++ New department ${newDepartment} added! +++`)
+            } catch (error) {
+                console.error(conBad, `error`)
+            }
+
+        } else if (param == 'role') {
+            const {newRoleName, newRoleSalary, newRoleDep} = newObj;
+            
+            // Get the id of the department
+            const getDepId = new Promise((resolve, reject) => {
+                resolve(db.query(`SELECT id FROM department WHERE name = '${newRoleDep}'`))
+            })
+            // THEN once we have the department id we can insert into table
+            getDepId.then((response) => {
+                let depID = response[0][0].id
+                const result = db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}', '${newRoleSalary}', '${depID}')`)
+                console.log(conGood, `\n +++ New role ${newRoleName} added! +++ `);
+            }) 
+
+        } else if (param == 'employee') {
+            const {newEmpFN, newEmpLN, newEmpRole, newEmpManager} = newObj;
+            // console.log(newEmpRole);
+            
+            // Get the ROLE ID
+            const getRoleID = new Promise ((resolve, reject) => {
+                resolve(db.query(`SELECT * FROM role WHERE title = '${newEmpRole}'`))
+            })
+
+            // Get the ID of the manager
+            const getManagerID = new Promise((resolve, reject) => {
+                // If the enetered employee is managed
+                if (newEmpManager != 'None') {
+                const splitName = newEmpManager.split(" ");
+                let manFN = splitName[0];
+                let manLN = splitName[1];
+
+                resolve(db.query(`SELECT id FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
+                } else {
+                    resolve('None');
+                }
+            })
+
+            // THEN add the new employee to the table
+            Promise.all([getRoleID, getManagerID]).then((response) => {
+                let roleID = response[0][0][0].id;
+                let managerID = (response[1] != 'None') ? response[1][0][0].id : 1;
+                // TO SOLVE: cannot insert 'null' into table without app freezing. Will be entered as 0 for now
+                // let managerID = (response[1] != 'None') ? response[1][0][0].id : null;
+
+                const result = db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${newEmpFN}','${newEmpLN}','${roleID}','${managerID}')`)
+
+                console.log(conGood, `\n +++ New employee ${newEmpFN} ${newEmpLN} added! +++`)
+            })
+        } else {console.error(conBad, `Invalid param submitted!!`)}
+    }
+    async updateEmp(emp, role) {
+
+        const splitName = emp.split(" ");
+        let empFN = splitName[0];
+        let empLN = splitName[1];
+
+        const getRoleID = new Promise ((resolve, reject) => {
+            resolve(db.query(`SELECT * FROM role WHERE title = '${role}'`))
+            reject(`Invalid query!`)
+        })
+        getRoleID.then((response) => {
+            let roleID = response[0][0].id;
+
+            const result = db.query(`UPDATE employee SET role_id = ${roleID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+
+            console.log(conGood, `\n +++ Employee ${empFN} ${empLN} updated with the ${role} role. ID: ${roleID} +++`)
+        })
+
+       
     }
 }
 
-const dbFunc = new DBFunc;
-// dbFunc.showAll('employee').then(console.log('Promise fufilled'));
-// console.log('Fufilled 2')
-// const grape = dbFunc.showAll('employee');
-// console.log(grape);
-
-// const promise1 = new Promise((resolve, reject) => {
-//     resolve(dbFunc.showAll('employee'));
-// });
-// promise1.then((response) => {
-//     console.log(response);
-//     this.init();
-// });
-
 module.exports = DBFunc;
 
- // const results = await db.query(`SELECT * FROM ${table}`, function (err, results) {
-        //     if (err) {
-        //         console.log(err);
-        //     }
-        //     // If called for the addRole(), addEmployee(), or updateRole func in inquirer.js
-        //     if (returnArray) {
-        //         let sendBack = [];
-
-        //         let param;
-        //         if (table == 'department') { param = 'name';
-        //         } else if (table == 'role') {param = 'title';
-        //         } else {param = 'first_name'};
-
-        //         for (let i = 0; i < results.length; i++) {
-        //             sendBack[i] = results[i][param];
-        //                 // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
-        //                 if (table = 'employee') { sendBack[i] += ` ${results[i]['last_name']}` };
-        //         };
-        //         // thrownObject = sendBack;
-        //     } else {
-        //         // console.table(results);
-        //         thrownObject = results;
-        //         // console.log(thrownObject);
-        //     };
-        //     console.log(thrownObject);
-        // });
+ 

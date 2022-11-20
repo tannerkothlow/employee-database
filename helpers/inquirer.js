@@ -6,6 +6,7 @@ const DBFunc = require('./mysql');
 
 const dbFunc = new DBFunc;
 
+const conTabCol = '\x1b[34m%s\1xb[0m';
 // Initializer (1) multiple choice that returns mysql data for viewing all departments, view all
 // roles, view all employees, (1) add a department (1) add a role (1) add an employee, (1) and 
 // update employee role. Plus a return function.
@@ -24,7 +25,7 @@ class Prompts {
                 `Add a department`,
                 `Add a role`,
                 `Add an employee`,
-                `Update and employee role`
+                `Update an employee role`
                 ],
                 pageSize: 5,
                 loop: false,
@@ -53,7 +54,7 @@ class Prompts {
                 case `Add an employee`:
                     this.addEmployee();
                     break;
-                case `Update and employee role`:
+                case `Update an employee role`:
                     this.updateEmpRole();
             }
         })
@@ -67,8 +68,7 @@ class Prompts {
             }
         ])
         .then((response) => {
-            console.log(response.newDepartment);
-            // dbFunc.addDepartment(response.newDepartment);
+            dbFunc.addNew(response, 'department')
             this.init();
         })
     }
@@ -80,6 +80,7 @@ class Prompts {
         });
         callInfo.then((response) => {
             departments = response;
+
             inquirer
             .prompt([
                 {
@@ -99,9 +100,7 @@ class Prompts {
                 }
             ])
             .then((response) => {
-                console.log(`Initialized addition of ${response.newRoleName}`);
-            // dbFunc.addRole(response);
-            // Deconstruct in function
+                dbFunc.addNew(response, 'role')
                 this.init();
             })
         });
@@ -150,39 +149,50 @@ class Prompts {
                 }
             ])
             .then((response) => {
-                console.log(response);
-                // dbFunc.addEmployee(response);
+                dbFunc.addNew(response, 'employee')
                 this.init();
             })
         });
     }
     updateEmpRole() {
-        // All employees, which role would you like to assign 
 
-        // dbFunc.allEmployees polymorph
-        const testEmps = [`Big Greg`, `Small Jim`, `Regular Pete`];
-        // dbFunc.allRoles polymorph
-        const testRoles = [`Stocker`, `Baker`, `Meat Cutter`, `Deli chef`];
+        let emps = [];
+        let roles = [];
 
+        const callEmps = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('employee', true));
+        });
+        const callRoles = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('role', true));
+        });
+
+        Promise.all([callEmps, callRoles]).then((response) => {
+
+            emps = response[0];
+            roles = response[1];
+            
         inquirer
         .prompt([
             {
                 type: 'list',
-                choices: testEmps,
+                choices: emps,
+                loop: false,
                 message: `Chose the employee that needs to be updated:`,
                 name: `chosenEmp`
             },
             {
                 type: 'list',
-                choices: testRoles,
+                choices: roles,
+                loop: false,
                 message: `Chose the new role to apply to the employee:`,
                 name: `chosenRole`
             }
         ])
         .then((response) => {
-            console.log(response);
+            dbFunc.updateEmp(response.chosenEmp, response.chosenRole);
             this.init();
         })
+        });
     }
 }
 
@@ -192,11 +202,12 @@ showAllPromise = choice => {
     });
     callInfo.then((response) => {
         console.table(response);
-        console.log('Promise resolved!');
+        // console.log('Promise resolved!');
         const prompts = new Prompts;
         prompts.init();
     });
 }
+
 
 const prompts = new Prompts;
 prompts.init();

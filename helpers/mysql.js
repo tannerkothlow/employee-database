@@ -54,11 +54,20 @@ class DBFunc {
         // Can probably be replaced with a switch statement if ever needs to be expanded.
         if (param == 'department') {
             const {newDepartment} = newObj;
-            console.log(newObj);
+            try {
+                const results = await db.query(`INSERT INTO department (name) VALUES ('${newDepartment}')`)
+            } catch (error) {
+                console.error(error)
+            }
 
         } else if (param == 'role') {
             const {newRoleName, newRoleSalary, newRoleDep} = newObj;
-            console.log(newObj);
+            const depID = getDepId(newRoleDep);
+            try {
+                const results = await db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}')`)
+            } catch (error) {
+                console.error(error)
+            }
 
         } else if (param == 'employee') {
             const {newEmpFN, newEmpLN, newEmpRole, newEmpmanager} = newObj;
@@ -68,6 +77,9 @@ class DBFunc {
     }
 }
 
+getDepId = dep => {
+    
+}
 
 module.exports = DBFunc;
 

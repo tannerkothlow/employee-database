@@ -237,13 +237,13 @@ class Prompts {
                 }
             ])
             .then((response) => {
-                const showEmp = new Promise ((resolve, reject) => {
+                const callInfo = new Promise((resolve, reject) => {
                     resolve(dbFunc.showEmpByManager(response.chosenManager));
                 });
-                showEmp.then((response) => {
-                    console.table(response)
+                callInfo.then((response) => {
+                    console.table(response);
                     this.init();
-                })
+                });
             })
         })
     }
@@ -260,7 +260,6 @@ showAllPromise = choice => {
         prompts.init();
     });
 }
-
 
 const prompts = new Prompts;
 prompts.init();

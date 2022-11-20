@@ -166,25 +166,40 @@ class DBFunc {
         let sendBack;
         // Get manager's ID, then get all employees with that manager_id, then return
         const splitName = manager.split(" ");
-            const manFN = splitName[0];
-            const manLN = splitName[1];
+        const manFN = splitName[0];
+        const manLN = splitName[1];
 
-            const getManagerID = new Promise ((resolve, reject) => {
-                resolve(db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
-                reject(`Invalid query!`)
-            });
-            getManagerID.then((response) => {
-                let managerID = response[0][0].id;
-                const getEmployees = new Promise((resolve, reject) => {
-                    resolve(db.query(`SELECT * FROM employee WHERE manager_id = ${managerID}`))
-                    reject(`Manager ID could not be found!`)
-                });
-                getEmployees.then((response) => {
-                    sendBack = response[0];
-                    return sendBack;
-                    
-                })
-            })
+        try {
+            const getManager = await db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`);
+            const data = getManager[0]
+            let managerID = data[0].id;
+
+            const getEmployees = await db.query(`SELECT * FROM employee WHERE manager_id = ${managerID}`);
+
+            sendBack = getEmployees[0];
+            // console.table(sendBack);
+            return sendBack;
+
+        } catch (error) {
+            console.error(error)
+        }
+        
+        // const getManagerID = new Promise ((resolve, reject) => {
+        //     resolve(db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
+        //     reject(`Invalid query!`)
+        // });
+        // getManagerID.then((response) => {
+        //     let managerID = response[0][0].id;
+        //     const getEmployees = new Promise((resolve, reject) => {
+        //         resolve(db.query(`SELECT * FROM employee WHERE manager_id = ${managerID}`))
+        //         reject(`Manager ID could not be found!`)
+        //     });
+        //     getEmployees.then((response) => {
+        //         sendBack = response[0];
+        //         console.log(sendBack)
+        //         return sendBack;
+        //     })
+        // })
     }
 }
 

@@ -8,8 +8,8 @@ require('dotenv').config({ path: '../.env' });
 // Add a department
 // Add a role
 // Add an employee
-// Update and employee role
-// Update and employee's manager
+// Update an employee role
+// Update an employee's manager
 
 const conGood = '\x1b[32m%s\x1b[0m';
 const conBad = '\x1b[31m%s\x1b[0m';
@@ -132,11 +132,9 @@ class DBFunc {
         let updateColumn
 
         if(param == 'role') {
-        getParamID = new Promise ((resolve, reject) => {
             updateColumn = `role_id`
-            resolve(db.query(`SELECT * FROM role WHERE title = '${elem}'`))
-            reject(`Invalid query!`)
-        })
+            getParamID = await db.query(`SELECT * FROM role WHERE title = '${elem}'`);
+       
         } else if (param == 'manager') {
 
             const splitName = elem.split(" ");
@@ -144,23 +142,35 @@ class DBFunc {
             let manLN = splitName[1];
             updateColumn = `manager_id`;
 
-            getParamID = new Promise ((resolve, reject) => {
-                resolve(db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
-                reject(`Invalid query!`)
-            })
+            getParamID = await db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`);
 
         } else { console.error(conBad `\nInvalid param!`)}
 
-        getParamID.then((response) => {
+        let paramID = getParamID[0][0].id;
+        const update = await db.query(`UPDATE employee SET ${updateColumn} = ${paramID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+        console.log(conGood, `\n +++ Employee ${empFN} ${empLN}'s ${param} updated to ID# ${paramID}. +++`);
+    }
+    async showEmpByManager(manager) {
+        let sendBack;
+        // Get manager's ID, then get all employees with that manager_id, then return
+        const splitName = manager.split(" ");
+        const manFN = splitName[0];
+        const manLN = splitName[1];
 
-            let paramID = response[0][0].id;
+        try {
+            const getManager = await db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`);
+            const data = getManager[0]
+            let managerID = data[0].id;
 
-            const result = db.query(`UPDATE employee SET ${updateColumn} = ${paramID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+            const getEmployees = await db.query(`SELECT * FROM employee WHERE manager_id = ${managerID}`);
 
-            console.log(conGood, `\n +++ Employee ${empFN} ${empLN}'s ${param} updated to ID# ${paramID}. +++`)
-        })
+            sendBack = getEmployees[0];
+            // console.table(sendBack);
+            return sendBack;
 
-       
+        } catch (error) {
+            console.error(error)
+        }
     }
 }
 

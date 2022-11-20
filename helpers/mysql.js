@@ -8,8 +8,8 @@ require('dotenv').config({ path: '../.env' });
 // Add a department
 // Add a role
 // Add an employee
-// Update and employee role
-// Update and employee's manager
+// Update an employee role
+// Update an employee's manager
 
 const conGood = '\x1b[32m%s\x1b[0m';
 const conBad = '\x1b[31m%s\x1b[0m';
@@ -161,6 +161,9 @@ class DBFunc {
         })
 
        
+    }
+    async showEmpByManager(manager) {
+        // Get manager's ID, then get all employees with that manager_id, then return
     }
 }
 

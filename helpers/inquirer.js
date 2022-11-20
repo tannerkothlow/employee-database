@@ -29,8 +29,8 @@ class Prompts {
                 `Add a role`,
                 `Add an employee`,
                 `Update an employee role`,
-                // ==== BONUS PROMPTS, EXPIREMENTAL ====
                 `Update an employee's manager`,
+                // ==== BONUS PROMPTS, EXPIREMENTAL ====
                 `View employees by manager`,
                 `Remove department, role, or employee`,
                 `View salary budgets per department`
@@ -66,7 +66,10 @@ class Prompts {
                     this.updateEmp('role');
                     break;
                 case `Update an employee's manager`:
-                    this.updateEmp('manager')
+                    this.updateEmp('manager');
+                    break;
+                case `View employees by manager`:
+                    this.viewEmpByManager();
             }
         })
     }
@@ -216,6 +219,33 @@ class Prompts {
         //     console.log(response);
         })
         });
+    }
+    viewEmpByManager() {
+        const getManagers = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('employee', true, true))
+        });
+        getManagers.then((response) => {
+            let managers = response;
+            inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    choices: managers,
+                    loop: false,
+                    message: `Chose a manager to view who they manage`,
+                    name: `chosenManager`
+                }
+            ])
+            .then((response) => {
+                const showEmp = new Promise ((resolve, reject) => {
+                    resolve(dbFunc.showEmpByManager(response.chosenManager));
+                });
+                showEmp.then((response) => {
+                    console.table(response)
+                    this.init();
+                })
+            })
+        })
     }
 }
 

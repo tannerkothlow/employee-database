@@ -167,30 +167,31 @@ class Prompts {
     }
     updateEmp(param) {
 
-        let emps = [];
+        console.log(param);
 
-        let param = [];
+        let emps = [];
+        let paramArray = [];
+
+        let callParam;
 
         const callEmps = new Promise((resolve, reject) => {
             resolve(dbFunc.showAll('employee', true));
         });
 
-        if (param = 'role') {
-            const callParam = new Promise((resolve, reject) => {
+        if (param == 'role') {
+            callParam = new Promise((resolve, reject) => {
                 resolve(dbFunc.showAll('role', true));
             });
-            return callParam;
-        } else if (param = 'manager') {
-            const callParam = new Promise((resolve, reject) => {
+        } else if (param == 'manager') {
+            callParam = new Promise((resolve, reject) => {
                 resolve(dbFunc.showAll('employee', true, true))
             });
-            return callParam;
         }
 
         Promise.all([callEmps, callParam]).then((response) => {
 
             emps = response[0];
-            param = response[1];
+            paramArray = response[1];
             
         inquirer
         .prompt([
@@ -203,7 +204,7 @@ class Prompts {
             },
             {
                 type: 'list',
-                choices: param,
+                choices: paramArray,
                 loop: false,
                 message: `Chose the new ${param} to apply to the employee:`,
                 name: `chosenParam`

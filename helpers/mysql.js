@@ -55,6 +55,7 @@ class DBFunc {
             const {newDepartment} = newObj;
             try {
                 const results = await db.query(`INSERT INTO department (name) VALUES ('${newDepartment}')`)
+                console.log(`New department ${newDepartment}`)
             } catch (error) {
                 console.error(error)
             }
@@ -71,6 +72,7 @@ class DBFunc {
                 // yeah ok 
                 let depID = response[0][0].id
                 const result = db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}', '${newRoleSalary}', '${depID}')`)
+                console.log(`New role ${newRoleName} added!`);
             }) 
 
         } else if (param == 'employee') {
@@ -94,11 +96,13 @@ class DBFunc {
 
             // THEN add the new employee to the table
             Promise.all([getRoleID, getManagerID]).then((response) => {
-                
+                // i love arrays
                 let roleID = response[0][0][0].id;
                 let managerID = response[1][0][0].id;
 
                 const result = db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${newEmpFN}','${newEmpLN}','${roleID}','${managerID}')`)
+
+                console.log(`New employee ${newEmpFN} ${newEmpLN} added!`)
             })
         } else {console.error(`Invalid param submitted!!`)}
     }

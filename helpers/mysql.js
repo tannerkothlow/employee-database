@@ -174,21 +174,41 @@ class DBFunc {
     }
     async deleteElement(table, element) {
         console.log(conCaution, `${table} table to have ${element} deleted`);
+
         // department name
         // role title
         // employee first_name + last_name
+
         if (table == 'department') {
-
+            const drop = db.query(`DELETE FROM ${table} WHERE name = '${element}'`);
+            if (drop) {
+                console.log(conCaution, `--- ${element} deleted from ${table}! ---`)
+            } else {
+                console.log(conBad, `Could not delete element!`);
+            };
         } else if (table == 'role') {
-
+            const drop = db.query(`DELETE FROM ${table} WHERE title = '${element}'`);
+            if (drop) {
+                console.log(conCaution, `--- ${element} deleted from ${table}! ---`)
+            } else {
+                console.log(conBad, `Could not delete element!`);
+            };
         } else if (table == 'employee') {
 
+            const splitName = element.split(" ");
+            let empFN = splitName[0];
+            let empLN = splitName[1];
+
+            const drop = db.query(`DELETE FROM ${table} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`);
+            if (drop) {
+                console.log(conCaution, `--- ${element} deleted from ${table}! ---`)
+            } else {
+                console.log(conBad, `Could not delete element!`);
+            };
         } else {
             console.log(conBad, `Invalid table entered!`)
             return;
         }
-
-        console.log(conBad, `--- {} deleted! ---`)
     }
     async viewSalaries(department) {
 

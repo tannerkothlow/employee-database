@@ -10,11 +10,6 @@ const conTabCol = '\x1b[34m%s\1xb[0m';
 const conMag = '\x1b[35m%s\x1b[0m';
 const conGood = '\x1b[32m%s\x1b[0m';
 
-// BONUS:
-
-// Delete departments, roles, and employees
-// View salary total of all employees in a department
-
 class Prompts {
     init() {
         inquirer
@@ -30,7 +25,6 @@ class Prompts {
                 `Update an employee role`,
                 `Update an employee's manager`,
                 `View employees by manager`,
-                   // ==== BONUS PROMPTS, EXPIREMENTAL ====
                 `Remove department, role, or employee`,
                 `View salary budgets per department`
                 ],

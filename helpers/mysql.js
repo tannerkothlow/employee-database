@@ -28,7 +28,7 @@ class DBFunc {
         try {
             const results = await db.query(`SELECT * FROM ${table}`);
             const data = results[0];
-
+            // Polymorph to send back JUST managers, an array of selections, or the raw data to be console.table'd
             if (managerCall) {
                 for (let i = 0; i < data.length; i++) {
                     if (data[i].manager_id == null) {
@@ -39,13 +39,13 @@ class DBFunc {
                 return sendBack;
             } else if(returnArray) {
                 let param;
+                // Param is set to the relevant "Name" key
                 if (table == 'department') {param = 'name'
                 } else if (table == 'role') {param = 'title'
                 } else {param = 'first_name'};
 
                 for (let i = 0; i < data.length; i++) {
                     sendBack[i] = data[i][param];
-                        // Kind of gross that I can't just edit 'param' to do this but eh, it's only one more line.
                         if (table == 'employee') { sendBack[i] += ` ${data[i]['last_name']}` };
                 };
 
@@ -58,12 +58,12 @@ class DBFunc {
         }
     }
     async addNew(newObj, param) {
-        // Can probably be replaced with a switch statement if ever needs to be expanded.
+        // Polymorph to send the incoming data to one of three functions that inserts data into its respective table
         if (param == 'department') {
             const {newDepartment} = newObj;
             try {
                 const results = await db.query(`INSERT INTO department (name) VALUES ('${newDepartment}')`)
-                console.log(`New department ${newDepartment}`)
+                console.log(`\n +++ New department ${newDepartment} added! +++`)
             } catch (error) {
                 console.error(error)
             }
@@ -76,11 +76,10 @@ class DBFunc {
                 resolve(db.query(`SELECT id FROM department WHERE name = '${newRoleDep}'`))
             })
             // THEN once we have the department id we can insert into table
-            getDepId.then((response) => { 
-                // yeah ok 
+            getDepId.then((response) => {
                 let depID = response[0][0].id
                 const result = db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}', '${newRoleSalary}', '${depID}')`)
-                console.log(`New role ${newRoleName} added!`);
+                console.log(`\n +++ New role ${newRoleName} added! +++ `);
             }) 
 
         } else if (param == 'employee') {
@@ -94,7 +93,7 @@ class DBFunc {
 
             // Get the ID of the manager
             const getManagerID = new Promise((resolve, reject) => {
-
+                // If the enetered employee is managed
                 if (newEmpManager != 'None') {
                 const splitName = newEmpManager.split(" ");
                 let manFN = splitName[0];
@@ -108,13 +107,14 @@ class DBFunc {
 
             // THEN add the new employee to the table
             Promise.all([getRoleID, getManagerID]).then((response) => {
-                // i love arrays
                 let roleID = response[0][0][0].id;
-                let managerID = (response[1] != 'None') ? response[1][0][0].id : null;
+                let managerID = (response[1] != 'None') ? response[1][0][0].id : 0;
+                // TO SOLVE: cannot insert 'null' into table without app freezing. Will be entered as 0 for now
+                // let managerID = (response[1] != 'None') ? response[1][0][0].id : null;
 
                 const result = db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${newEmpFN}','${newEmpLN}','${roleID}','${managerID}')`)
 
-                console.log(`New employee ${newEmpFN} ${newEmpLN} added!`)
+                console.log(`\n +++ New employee ${newEmpFN} ${newEmpLN} added! +++`)
             })
         } else {console.error(`Invalid param submitted!!`)}
     }
@@ -133,7 +133,7 @@ class DBFunc {
 
             const result = db.query(`UPDATE employee SET role_id = ${roleID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
 
-            console.log(`Employee ${empFN} ${empLN} updated with the ${role} role. ID: ${roleID}`)
+            console.log(`\n +++ Employee ${empFN} ${empLN} updated with the ${role} role. ID: ${roleID} +++`)
         })
 
        

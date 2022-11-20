@@ -201,15 +201,12 @@ showAllPromise = choice => {
     });
     callInfo.then((response) => {
         console.table(response);
-        console.log('Promise resolved!');
+        // console.log('Promise resolved!');
         const prompts = new Prompts;
         prompts.init();
     });
 }
 
-addNewPromise = (response, param) => {
-    // Eventually add stuff here
-}
 
 const prompts = new Prompts;
 prompts.init();

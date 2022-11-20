@@ -7,12 +7,10 @@ const DBFunc = require('./mysql');
 const dbFunc = new DBFunc;
 
 const conTabCol = '\x1b[34m%s\1xb[0m';
+const conMag = '\x1b[35m%s\x1b[0m';
 
 // BONUS:
 
-// Update employee managers
-// View employees by manager
-// View employees by department
 // Delete departments, roles, and employees
 // View salary total of all employees in a department
 
@@ -312,9 +310,15 @@ class Prompts {
                 }
             ])
             .then((response) => {
-                dbFunc.viewSalaries(response.chosenDepartment)
+                const getSalaries = new Promise((resolve, reject) => {
+                    resolve(dbFunc.viewSalaries(response.chosenDepartment))
+                })
+                .then((response) => {
+                    console.log(response);
+                    this.init();
+                })
                 // console.log(response);
-                this.init();
+                // this.init();
             })
         })
     }

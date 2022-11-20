@@ -35,7 +35,7 @@ class Prompts {
             }
         ])
         .then((response) => {
-            console.log(response.initOption)
+            // console.log(response.initOption)
             switch(response.initOption) {
                 case `View all departments`:
                     showAllPromise('department')
@@ -169,7 +169,7 @@ class Prompts {
     }
     updateEmp(param) {
 
-        console.log(param);
+        // console.log(param);
 
         let emps = [];
         let paramArray = [];
@@ -265,7 +265,7 @@ class Prompts {
         ])
         .then((response) => {
             const param = response.delChoice.toLowerCase().slice(0, -1);
-            console.log(`The edited param ${param}`);
+            // console.log(`The edited param ${param}`);
             const callChoices = new Promise (resolve => {
                 resolve(dbFunc.showAll(`${param}`, true));
             });
@@ -345,7 +345,7 @@ showAllPromise = choice => {
     });
 }
 
-const prompts = new Prompts;
-prompts.init();
+// const prompts = new Prompts;
+// prompts.init();
 
 module.exports = Prompts;

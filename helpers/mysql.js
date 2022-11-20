@@ -29,7 +29,15 @@ class DBFunc {
             const results = await db.query(`SELECT * FROM ${table}`);
             const data = results[0];
 
-            if(returnArray) {
+            if (managerCall) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].manager_id == null) {
+                        let manName = `${data[i].last_name} ${data[i].last_name}`
+                        sendBack.push(manName);
+                    }
+                }
+                return sendBack;
+            } else if(returnArray) {
                 let param;
                 if (table == 'department') {param = 'name'
                 } else if (table == 'role') {param = 'title'

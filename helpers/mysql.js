@@ -50,7 +50,6 @@ class DBFunc {
         }
     }
     async addNew(newObj, param) {
-
         // Can probably be replaced with a switch statement if ever needs to be expanded.
         if (param == 'department') {
             const {newDepartment} = newObj;
@@ -62,26 +61,48 @@ class DBFunc {
 
         } else if (param == 'role') {
             const {newRoleName, newRoleSalary, newRoleDep} = newObj;
+            
+            // Get the id of the department
             const getDepId = new Promise((resolve, reject) => {
-                resolve(db.query(`SELECT * FROM department WHERE name = '${newRoleDep}'`))
+                resolve(db.query(`SELECT id FROM department WHERE name = '${newRoleDep}'`))
             })
+            // THEN once we have the department id we can insert into table
             getDepId.then((response) => { 
-                // are you kidding me
+                // yeah ok 
                 let depID = response[0][0].id
                 const result = db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}', '${newRoleSalary}', '${depID}')`)
             }) 
 
         } else if (param == 'employee') {
-            const {newEmpFN, newEmpLN, newEmpRole, newEmpmanager} = newObj;
-            console.log(newObj);
+            const {newEmpFN, newEmpLN, newEmpRole, newEmpManager} = newObj;
+            console.log(newEmpRole);
+            
+            // Get the ROLE ID
+            const getRoleID = new Promise ((resolve, reject) => {
+                resolve(db.query(`SELECT * FROM role WHERE title = '${newEmpRole}'`))
+            })
 
+            // Get the ID of the manager
+            const getManagerID = new Promise((resolve, reject) => {
+
+                const splitName = newEmpManager.split(" ");
+                let manFN = splitName[0];
+                let manLN = splitName[1];
+
+                resolve(db.query(`SELECT id FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
+            })
+
+            // THEN add the new employee to the table
+            Promise.all([getRoleID, getManagerID]).then((response) => {
+                
+                let roleID = response[0][0][0].id;
+                let managerID = response[1][0][0].id;
+
+                const result = db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${newEmpFN}','${newEmpLN}','${roleID}','${managerID}')`)
+            })
         } else {console.error(`Invalid param submitted!!`)}
     }
 }
-
-// getDepId = dep => {
-//     db.query(`SELECT * FROM `)
-// }
 
 module.exports = DBFunc;
 

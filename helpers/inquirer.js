@@ -24,7 +24,7 @@ class Prompts {
                 `Add a department`,
                 `Add a role`,
                 `Add an employee`,
-                `Update and employee role`
+                `Update an employee role`
                 ],
                 pageSize: 5,
                 loop: false,
@@ -53,7 +53,7 @@ class Prompts {
                 case `Add an employee`:
                     this.addEmployee();
                     break;
-                case `Update and employee role`:
+                case `Update an employee role`:
                     this.updateEmpRole();
             }
         })
@@ -158,14 +158,14 @@ class Prompts {
         let emps = [];
         let roles = [];
 
-        const callRoles = new Promise((resolve, reject) => {
+        const callEmps = new Promise((resolve, reject) => {
             resolve(dbFunc.showAll('employee', true));
         });
-        const callManager = new Promise((resolve, reject) => {
-            resolve(dbFunc.showAll('role', true, true));
+        const callRoles = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('role', true));
         });
 
-        Promise.all([callRoles, callManager]).then((response) => {
+        Promise.all([callEmps, callRoles]).then((response) => {
 
             emps = response[0];
             roles = response[1];
@@ -188,7 +188,7 @@ class Prompts {
             }
         ])
         .then((response) => {
-            dbFunc.updateEmp(emp, role);
+            dbFunc.updateEmp(response.chosenEmp, response.chosenRole);
             this.init();
         })
         });

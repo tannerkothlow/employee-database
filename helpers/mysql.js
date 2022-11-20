@@ -119,9 +119,24 @@ class DBFunc {
         } else {console.error(`Invalid param submitted!!`)}
     }
     async updateEmp(emp, role) {
+
         const splitName = emp.split(" ");
         let empFN = splitName[0];
         let empLN = splitName[1];
+
+        const getRoleID = new Promise ((resolve, reject) => {
+            resolve(db.query(`SELECT * FROM role WHERE title = '${role}'`))
+            reject(`Invalid query!`)
+        })
+        getRoleID.then((response) => {
+            let roleID = response[0][0].id;
+
+            const result = db.query(`UPDATE employee SET role_id = ${roleID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+
+            console.log(`Employee ${empFN} ${empLN} updated with the ${role} role. ID: ${roleID}`)
+        })
+
+       
     }
 }
 

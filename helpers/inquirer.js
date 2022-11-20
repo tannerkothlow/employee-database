@@ -211,9 +211,9 @@ class Prompts {
             }
         ])
         .then((response) => {
-        //     dbFunc.updateEmp(response.chosenEmp, response.chosenRole);
-        //     this.init();
-            console.log(response);
+            dbFunc.updateEmp(response.chosenEmp, response.chosenParam, param);
+            this.init();
+        //     console.log(response);
         })
         });
     }

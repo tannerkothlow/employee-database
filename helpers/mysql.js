@@ -9,6 +9,7 @@ require('dotenv').config({ path: '../.env' });
 // Add a role
 // Add an employee
 // Update and employee role
+// Update and employee's manager
 
 const conGood = '\x1b[32m%s\x1b[0m';
 const conBad = '\x1b[31m%s\x1b[0m';
@@ -121,22 +122,42 @@ class DBFunc {
             })
         } else {console.error(conBad, `Invalid param submitted!!`)}
     }
-    async updateEmp(emp, role) {
+    async updateEmp(emp, elem, param) {
 
         const splitName = emp.split(" ");
         let empFN = splitName[0];
         let empLN = splitName[1];
 
-        const getRoleID = new Promise ((resolve, reject) => {
-            resolve(db.query(`SELECT * FROM role WHERE title = '${role}'`))
+        let getParamID
+        let updateColumn
+
+        if(param == 'role') {
+        getParamID = new Promise ((resolve, reject) => {
+            updateColumn = `role_id`
+            resolve(db.query(`SELECT * FROM role WHERE title = '${elem}'`))
             reject(`Invalid query!`)
         })
-        getRoleID.then((response) => {
-            let roleID = response[0][0].id;
+        } else if (param == 'manager') {
 
-            const result = db.query(`UPDATE employee SET role_id = ${roleID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+            const splitName = elem.split(" ");
+            let manFN = splitName[0];
+            let manLN = splitName[1];
+            updateColumn = `manager_id`;
 
-            console.log(conGood, `\n +++ Employee ${empFN} ${empLN} updated with the ${role} role. ID: ${roleID} +++`)
+            getParamID = new Promise ((resolve, reject) => {
+                resolve(db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
+                reject(`Invalid query!`)
+            })
+
+        } else { console.error(conBad `\nInvalid param!`)}
+
+        getParamID.then((response) => {
+
+            let paramID = response[0][0].id;
+
+            const result = db.query(`UPDATE employee SET ${updateColumn} = ${paramID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+
+            console.log(conGood, `\n +++ Employee ${empFN} ${empLN}'s ${param} updated to ID# ${paramID}. +++`)
         })
 
        

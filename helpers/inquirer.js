@@ -345,7 +345,7 @@ showAllPromise = choice => {
     });
 }
 
-// const prompts = new Prompts;
-// prompts.init();
+const prompts = new Prompts;
+prompts.init();
 
 module.exports = Prompts;

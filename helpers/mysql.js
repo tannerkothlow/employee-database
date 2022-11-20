@@ -10,6 +10,9 @@ require('dotenv').config({ path: '../.env' });
 // Add an employee
 // Update and employee role
 
+const conGood = '\x1b[32m%s\x1b[0m';
+const conBad = '\x1b[31m%s\x1b[0m';
+
 const dbConfig = {
     host: 'localhost',
     user: process.env.DB_USER,
@@ -63,9 +66,9 @@ class DBFunc {
             const {newDepartment} = newObj;
             try {
                 const results = await db.query(`INSERT INTO department (name) VALUES ('${newDepartment}')`)
-                console.log(`\n +++ New department ${newDepartment} added! +++`)
+                console.log(conGood, `\n +++ New department ${newDepartment} added! +++`)
             } catch (error) {
-                console.error(error)
+                console.error(conBad, `error`)
             }
 
         } else if (param == 'role') {
@@ -79,12 +82,12 @@ class DBFunc {
             getDepId.then((response) => {
                 let depID = response[0][0].id
                 const result = db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${newRoleName}', '${newRoleSalary}', '${depID}')`)
-                console.log(`\n +++ New role ${newRoleName} added! +++ `);
+                console.log(conGood, `\n +++ New role ${newRoleName} added! +++ `);
             }) 
 
         } else if (param == 'employee') {
             const {newEmpFN, newEmpLN, newEmpRole, newEmpManager} = newObj;
-            console.log(newEmpRole);
+            // console.log(newEmpRole);
             
             // Get the ROLE ID
             const getRoleID = new Promise ((resolve, reject) => {
@@ -108,15 +111,15 @@ class DBFunc {
             // THEN add the new employee to the table
             Promise.all([getRoleID, getManagerID]).then((response) => {
                 let roleID = response[0][0][0].id;
-                let managerID = (response[1] != 'None') ? response[1][0][0].id : 0;
+                let managerID = (response[1] != 'None') ? response[1][0][0].id : 1;
                 // TO SOLVE: cannot insert 'null' into table without app freezing. Will be entered as 0 for now
                 // let managerID = (response[1] != 'None') ? response[1][0][0].id : null;
 
                 const result = db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${newEmpFN}','${newEmpLN}','${roleID}','${managerID}')`)
 
-                console.log(`\n +++ New employee ${newEmpFN} ${newEmpLN} added! +++`)
+                console.log(conGood, `\n +++ New employee ${newEmpFN} ${newEmpLN} added! +++`)
             })
-        } else {console.error(`Invalid param submitted!!`)}
+        } else {console.error(conBad, `Invalid param submitted!!`)}
     }
     async updateEmp(emp, role) {
 
@@ -133,7 +136,7 @@ class DBFunc {
 
             const result = db.query(`UPDATE employee SET role_id = ${roleID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
 
-            console.log(`\n +++ Employee ${empFN} ${empLN} updated with the ${role} role. ID: ${roleID} +++`)
+            console.log(conGood, `\n +++ Employee ${empFN} ${empLN} updated with the ${role} role. ID: ${roleID} +++`)
         })
 
        

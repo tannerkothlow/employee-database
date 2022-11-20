@@ -6,6 +6,7 @@ const DBFunc = require('./mysql');
 
 const dbFunc = new DBFunc;
 
+const conTabCol = '\x1b[34m%s\1xb[0m';
 // Initializer (1) multiple choice that returns mysql data for viewing all departments, view all
 // roles, view all employees, (1) add a department (1) add a role (1) add an employee, (1) and 
 // update employee role. Plus a return function.

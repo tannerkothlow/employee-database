@@ -177,6 +177,18 @@ class DBFunc {
         // department name
         // role title
         // employee first_name + last_name
+        if (table == 'department') {
+
+        } else if (table == 'role') {
+
+        } else if (table == 'employee') {
+
+        } else {
+            console.log(conBad, `Invalid table entered!`)
+            return;
+        }
+
+        console.log(conBad, `--- {} deleted! ---`)
     }
     async viewSalaries(department) {
 

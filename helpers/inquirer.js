@@ -8,6 +8,7 @@ const dbFunc = new DBFunc;
 
 const conTabCol = '\x1b[34m%s\1xb[0m';
 const conMag = '\x1b[35m%s\x1b[0m';
+const conGood = '\x1b[32m%s\x1b[0m';
 
 // BONUS:
 
@@ -284,11 +285,27 @@ class Prompts {
                         choices: paramChoices,
                         message: `Choose what you want to delete`,
                         name: `delElement`
+                    },
+                    {
+                        type: 'list',
+                        loop: false,
+                        choices: [
+                            `[NO - CANCEL]`,
+                            `[YES - DELETE]`
+                        ],
+                        message: `ARE YOU SURE? \n This cannot be undone!`,
+                        name: `confirm`
                     }
                 ])
                 .then((response) => {
-                    dbFunc.deleteElement(param, response.delElement)
-                    this.init();
+                    // const delElement = response.delElement
+                    if (response.confirm == `[YES - DELETE]`) {
+                        dbFunc.deleteElement(param, response.delElement);
+                        this.init();
+                    } else {
+                        console.log(conGood, `++ Deletion canceled. ++`);
+                        this.init();
+                    }
                 })
             })
         })
@@ -317,8 +334,6 @@ class Prompts {
                     console.log(response);
                     this.init();
                 })
-                // console.log(response);
-                // this.init();
             })
         })
     }

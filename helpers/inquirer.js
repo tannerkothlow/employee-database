@@ -256,7 +256,45 @@ class Prompts {
         })
     }
     deleteElement() {
-        // 
+        inquirer
+        .prompt([
+            {
+                type: 'list',
+                loop: false,
+                choices: [
+                    `Departments`,
+                    `Roles`,
+                    `Employees`
+                ],
+                message: 'Chose what you want to delete',
+                name: 'delChoice'
+            }
+        ])
+        .then((response) => {
+            const param = response.delChoice.toLowerCase().slice(0, -1);
+            console.log(`The edited param ${param}`);
+            const callChoices = new Promise (resolve => {
+                resolve(dbFunc.showAll(`${param}`, true));
+            });
+            callChoices.then((response) => {
+                let paramChoices = response;
+                inquirer
+                .prompt([
+                    {
+                        type: 'list',
+                        loop: false,
+                        choices: paramChoices,
+                        message: `Choose what you want to delete`,
+                        name: `delElement`
+                    }
+                ])
+                .then((response) => {
+                    console.log(`${param} table to have ${response.delElement} deleted`)
+                    // dbFunc.deleteElement(table, element)
+                    this.init();
+                })
+            })
+        })
     }
     viewBudget() {
         // 

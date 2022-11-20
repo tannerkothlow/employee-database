@@ -296,7 +296,27 @@ class Prompts {
         })
     }
     viewBudget() {
-        // 
+        const callInfo = new Promise((resolve, reject) => {
+            resolve(dbFunc.showAll('department', true));
+        });
+        callInfo.then((response) => {
+            let departments = response;
+            inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    loop: false,
+                    choices: departments,
+                    message: `Chose a department to see the combined salary of all employees`,
+                    name: `chosenDepartment`
+                }
+            ])
+            .then((response) => {
+                // dbFunc.viewSalaries(department)
+                console.log(response);
+                this.init();
+            })
+        })
     }
 }
 

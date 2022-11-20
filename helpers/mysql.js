@@ -132,11 +132,9 @@ class DBFunc {
         let updateColumn
 
         if(param == 'role') {
-        getParamID = new Promise ((resolve, reject) => {
             updateColumn = `role_id`
-            resolve(db.query(`SELECT * FROM role WHERE title = '${elem}'`))
-            reject(`Invalid query!`)
-        })
+            getParamID = await db.query(`SELECT * FROM role WHERE title = '${elem}'`);
+       
         } else if (param == 'manager') {
 
             const splitName = elem.split(" ");
@@ -144,23 +142,13 @@ class DBFunc {
             let manLN = splitName[1];
             updateColumn = `manager_id`;
 
-            getParamID = new Promise ((resolve, reject) => {
-                resolve(db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
-                reject(`Invalid query!`)
-            })
+            getParamID = await db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`);
 
         } else { console.error(conBad `\nInvalid param!`)}
 
-        getParamID.then((response) => {
-
-            let paramID = response[0][0].id;
-
-            const result = db.query(`UPDATE employee SET ${updateColumn} = ${paramID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
-
-            console.log(conGood, `\n +++ Employee ${empFN} ${empLN}'s ${param} updated to ID# ${paramID}. +++`)
-        })
-
-       
+        let paramID = getParamID[0][0].id;
+        const update = await db.query(`UPDATE employee SET ${updateColumn} = ${paramID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+        console.log(conGood, `\n +++ Employee ${empFN} ${empLN}'s ${param} updated to ID# ${paramID}. +++`);
     }
     async showEmpByManager(manager) {
         let sendBack;
@@ -183,23 +171,6 @@ class DBFunc {
         } catch (error) {
             console.error(error)
         }
-        
-        // const getManagerID = new Promise ((resolve, reject) => {
-        //     resolve(db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`))
-        //     reject(`Invalid query!`)
-        // });
-        // getManagerID.then((response) => {
-        //     let managerID = response[0][0].id;
-        //     const getEmployees = new Promise((resolve, reject) => {
-        //         resolve(db.query(`SELECT * FROM employee WHERE manager_id = ${managerID}`))
-        //         reject(`Manager ID could not be found!`)
-        //     });
-        //     getEmployees.then((response) => {
-        //         sendBack = response[0];
-        //         console.log(sendBack)
-        //         return sendBack;
-        //     })
-        // })
     }
 }
 

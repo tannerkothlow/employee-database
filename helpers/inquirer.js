@@ -312,8 +312,8 @@ class Prompts {
                 }
             ])
             .then((response) => {
-                // dbFunc.viewSalaries(department)
-                console.log(response);
+                dbFunc.viewSalaries(response.chosenDepartment)
+                // console.log(response);
                 this.init();
             })
         })

@@ -178,6 +178,17 @@ class DBFunc {
         // role title
         // employee first_name + last_name
     }
+    async viewSalaries(department) {
+
+        const getDepartment = await db.query(`SELECT * FROM department WHERE name = '${department}'`);
+        
+        const depID = getDepartment[0][0].id;
+        // Gets the ID of all roles that are in the department
+        const getRolesInDep = await db.query(`SELECT id FROM role WHERE department_id = ${depID}`)
+        console.log(getRolesInDep[0]);
+
+        // const getEmpInDep = await db.query(`SELECT * FROM employee`)
+    }
 }
 
 module.exports = DBFunc;

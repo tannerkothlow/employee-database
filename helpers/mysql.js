@@ -13,6 +13,7 @@ require('dotenv').config({ path: '../.env' });
 
 const conGood = '\x1b[32m%s\x1b[0m';
 const conBad = '\x1b[31m%s\x1b[0m';
+const conCaution = '\x1b[33m%s\x1b[0m';
 
 const dbConfig = {
     host: 'localhost',
@@ -128,11 +129,11 @@ class DBFunc {
         let empFN = splitName[0];
         let empLN = splitName[1];
 
-        let getParamID
-        let updateColumn
+        let getParamID;
+        let updateColumn;
 
         if(param == 'role') {
-            updateColumn = `role_id`
+            updateColumn = `role_id`;
             getParamID = await db.query(`SELECT * FROM role WHERE title = '${elem}'`);
        
         } else if (param == 'manager') {
@@ -144,10 +145,10 @@ class DBFunc {
 
             getParamID = await db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`);
 
-        } else { console.error(conBad `\nInvalid param!`)}
+        } else { console.error(conBad `\nInvalid param!`)};
 
         let paramID = getParamID[0][0].id;
-        const update = await db.query(`UPDATE employee SET ${updateColumn} = ${paramID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`)
+        const update = await db.query(`UPDATE employee SET ${updateColumn} = ${paramID} WHERE first_name = '${empFN}' AND last_name = '${empLN}'`);
         console.log(conGood, `\n +++ Employee ${empFN} ${empLN}'s ${param} updated to ID# ${paramID}. +++`);
     }
     async showEmpByManager(manager) {
@@ -159,13 +160,12 @@ class DBFunc {
 
         try {
             const getManager = await db.query(`SELECT * FROM employee WHERE first_name = '${manFN}' AND last_name = '${manLN}'`);
+
             const data = getManager[0]
             let managerID = data[0].id;
-
             const getEmployees = await db.query(`SELECT * FROM employee WHERE manager_id = ${managerID}`);
-
+            
             sendBack = getEmployees[0];
-            // console.table(sendBack);
             return sendBack;
 
         } catch (error) {
@@ -173,7 +173,7 @@ class DBFunc {
         }
     }
     async deleteElement(table, element) {
-        console.log(`${table} table to have ${element} deleted`);
+        console.log(conCaution, `${table} table to have ${element} deleted`);
         // department name
         // role title
         // employee first_name + last_name

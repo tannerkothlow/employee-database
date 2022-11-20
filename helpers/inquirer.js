@@ -188,7 +188,7 @@ class Prompts {
             }
         ])
         .then((response) => {
-            console.log(response);
+        
             this.init();
         })
         });

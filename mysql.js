@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 const cTable = require('console.table');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: './.env' });
 
 // View all departments (polymorph to send back an array)
 // View all roles (polymorph to send back an array)
@@ -112,12 +112,14 @@ class DBFunc {
 
             // THEN add the new employee to the table
             Promise.all([getRoleID, getManagerID]).then((response) => {
-                let roleID = response[0][0][0].id;
-                let managerID = (response[1] != 'None') ? response[1][0][0].id : 1;
-                // TO SOLVE: cannot insert 'null' into table without app freezing. Will be entered as 0 for now
-                // let managerID = (response[1] != 'None') ? response[1][0][0].id : null;
+                const roleID = response[0][0][0].id;
+                const managerID = (response[1] != 'None') ? response[1][0][0].id : 1;
 
                 const result = db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${newEmpFN}','${newEmpLN}','${roleID}','${managerID}')`)
+                // Sets manager_id to nulll if the employee was added as having no manager. (Is then assumed to be a manager)
+                if (response[1] == 'None') {
+                    const makeManager = db.query(`UPDATE employee SET manager_id = ${null} WHERE first_name = '${newEmpFN}' AND last_name = '${newEmpLN}' AND role_id = '${roleID}'`)
+                }
 
                 console.log(conGood, `\n +++ New employee: ${newEmpFN} ${newEmpLN} added! +++`)
             })

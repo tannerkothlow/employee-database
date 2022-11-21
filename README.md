@@ -24,4 +24,8 @@
 
 ![init](./project/images/delete_emp.PNG)
 
-## License
+## License and Credit
+
+Standard MIT license, coursework.
+
+This project makes use of the [mysql2](https://www.npmjs.com/package/mysql2), [inquirer](https://www.npmjs.com/package//inquirer), [dotenv](https://www.npmjs.com/package/dotenv?ref=hackernoon.com), and [console.table](https://www.npmjs.com/package/console.table) packages.
